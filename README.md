@@ -16,12 +16,16 @@
 4. `ai-block-toy-app-sync-map-v1.md`
    - C：状态机 / 事件流 / 家长端手机 App 同步映射
 
+5. `ai-block-toy-parent-app-ui-v1.md`
+   - 家长端手机 App UI 主稿 / 信息架构
+
 ## 建议阅读顺序
 
 1. 先看 `ai-block-toy-master-outline-v1.md`
 2. 再看 `ai-block-toy-state-machine-v1.md`
 3. 再看 `ai-block-toy-backend-schema-v1.md`
-4. 最后看 `ai-block-toy-app-sync-map-v1.md`
+4. 再看 `ai-block-toy-app-sync-map-v1.md`
+5. 最后看 `ai-block-toy-parent-app-ui-v1.md`
 
 ## 当前状态
 
@@ -31,4 +35,4 @@
 
 ## 备注
 
-- 之前提到的家长端 UI 主稿文件，目前在这个目录里没找到落盘成品；如果要，我下一步可以补一份正式归档版到这个文件夹里。
+- 家长端 UI 主稿已经补齐并归档到本目录。
