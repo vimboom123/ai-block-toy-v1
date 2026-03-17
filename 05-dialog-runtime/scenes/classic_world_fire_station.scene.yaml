@@ -1,0 +1,172 @@
+scene_id: classic_world_fire_station
+scene_name: Classic World - Fire Station
+scene_version: v3
+source_status: user_confirmed_core_objects
+source_notes:
+  - 当前版本以用户提供的实物图片与口头补充为准。
+  - 已确认该场景包含消防站、消防车、直升机、消防员、火源件、床、火警响应中心等核心要素。
+  - 火源件后续需要支持跨场景联动，不绑定为消防站内部专属事件。
+brand:
+  name: Classic World
+language:
+  default_locale: zh-CN
+  supported_locales:
+    - zh-CN
+age_band:
+  min: 4
+  max: 6
+theme_family: city_rescue
+play_pattern:
+  type: roleplay_and_build
+  interaction_mode: guided_story_dialog
+core_objects:
+  required:
+    - fire_station
+    - fire_truck
+    - helicopter
+    - firefighter_1
+    - firefighter_2
+    - dispatch_center_unit
+    - movable_small_fire_source_1
+    - movable_small_fire_source_2
+    - movable_large_fire_source_1
+    - bed
+  fixed_background_elements:
+    - wall_gym
+    - wall_locker_room
+    - wall_clock
+    - dispatch_center_phone_left
+    - dispatch_center_phone_right
+  structural_elements:
+    - garage_bay
+    - helipad
+    - stair_or_slide_pole
+    - multi_floor_station
+world_constraints:
+  movable_objects:
+    - fire_truck
+    - helicopter
+    - firefighter_1
+    - firefighter_2
+    - dispatch_center_unit
+    - movable_small_fire_source_1
+    - movable_small_fire_source_2
+    - movable_large_fire_source_1
+    - bed
+  fixed_background_objects:
+    - wall_gym
+    - wall_locker_room
+    - wall_clock
+  interpretation_rules:
+    - 墙上的 gym / 更衣室 / 时钟 属于背景设定，不默认当作可操作主任务物件
+    - dispatch_center_phone_left / right 是指挥台上的视觉功能元素，不作为独立可拆配件
+    - 火源件属于跨场景可迁移任务物件，不绑定在消防站内部
+    - 床可作为需要保护或转移的目标物，不等同于消防站固定设施
+    - dispatch_center_unit 是可移动的火警响应中心/指挥台，不是人物对象
+story_world:
+  setting: 小镇消防站与周边救援网络
+  fantasy_level: low
+  emotional_tone:
+    - 紧张但不吓人
+    - 鼓励行动
+    - 节奏明快
+    - 任务导向
+character_roles:
+  child_role: 小小消防员 / 小小指挥员
+  guide_role: 消防指挥员 / 讲故事引导者
+  parent_role: 旁观支持者，必要时介入
+learning_goals:
+  - 理解消防站、消防车、直升机、消防员、指挥台之间的角色关系
+  - 能区分可移动任务元素与固定背景元素
+  - 理解火警响应中心负责接警、判断、调度与出动
+  - 能理解火源可以来自其他场景，消防站负责响应
+conversation_style:
+  system_voice:
+    short_sentences: true
+    command_clarity: high
+    avoid_long_explanations: true
+    encouragement_level: medium
+  allowed_patterns:
+    - 先观察再行动
+    - 一次只给一个任务
+    - 完成后立刻确认下一步
+    - 错误时先轻提示，再升级引导
+    - 先接警再判断出动方案
+  forbidden_patterns:
+    - 渲染灾难恐惧
+    - 血腥受伤描述
+    - 连续长篇说教
+    - 一次抛出过多步骤
+cross_scene_hooks:
+  enabled: true
+  portable_story_objects:
+    - movable_small_fire_source_1
+    - movable_small_fire_source_2
+    - movable_large_fire_source_1
+  design_rule:
+    - 火源件必须被视为跨场景通用事件触发器，而不是消防站专属配件
+    - 后续若用户拥有其他场景，火源可以落在其他场景中，由消防站承担“接警与响应”角色
+    - dialog runtime 需要预留 `external_incident_source` 概念
+scenario_hooks:
+  opening:
+    - 电话响了，火警响应中心收到新的求助消息。
+    - 指挥台已经收到警报，我们快看看哪里需要帮忙。
+    - 小小消防员，准备好决定谁先出动了吗？
+  object_awareness:
+    - 先看看哪些东西能移动，哪些只是画在墙上的背景。
+    - 这个火源是在消防站里，还是从别的场景传来的求助？
+  transition:
+    - 先让消防员集合，再决定消防车还是直升机先出发。
+    - 这次要先处理两个小火源，还是先去看那个大火源？
+    - 床边安全不安全，要不要先保护它？
+  success:
+    - 太好了，这一步完成了，我们继续去帮忙。
+    - 做得不错，消防站已经完成这次响应了。
+  fallback:
+    - 没关系，我们先做最关键的一步。
+    - 先别着急，先确认火源位置，再决定怎么出动。
+parent_summary_focus:
+  - 是否理解消防站/消防车/直升机/消防员/指挥台的角色关系
+  - 是否能区分背景元素和可移动任务元素
+  - 是否理解火源可以来自其他场景，消防站负责响应
+  - 是否能按顺序完成接警、判断、出动、救援、回站
+candidate_tasks:
+  - task_id: fs_001
+    name: 场景识别
+    goal: 说出哪些是能动的，哪些只是画在墙上的
+    expected_child_action: 区分可操作元素与背景元素
+  - task_id: fs_002
+    name: 接警判断
+    goal: 在指挥台确认这次求助来自哪里
+    expected_child_action: 说出内部火警或外部场景火警
+  - task_id: fs_003
+    name: 集合出动
+    goal: 让消防员集合，并决定消防车还是直升机先出发
+    expected_child_action: 完成角色和载具选择
+  - task_id: fs_004
+    name: 火源判断
+    goal: 识别这次是小火源还是大火源，以及火源位置
+    expected_child_action: 根据火源大小/位置选择处理策略
+  - task_id: fs_005
+    name: 救援执行
+    goal: 把对应载具和消防员送到任务位置
+    expected_child_action: 完成出动和处理动作
+  - task_id: fs_006
+    name: 回站总结
+    goal: 复述刚才发生了什么，以及下次如果火源出现在别的场景怎么办
+    expected_child_action: 用自己的话总结
+runtime_mapping:
+  recommended_model_provider: volcengine_ark
+  recommended_runtime_mode: text_dialog_first
+  tts_priority: high
+  asr_priority: later
+  future_extensibility:
+    - external_incident_source
+    - multi_scene_story_routing
+    - portable_hazard_objects
+    - dispatch_center_decision_node
+ui_mapping_hints:
+  hero_title: 消防站出动啦
+  hero_subtitle: 和小小消防员一起接警、出动、救援
+  accent_color_family: red_orange
+  icon_hint: fire_truck

@@ -1,0 +1,15 @@
+{
+  "name": "software-e2e",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "run:fixture": "node --import tsx ./src/cli.ts",
+    "check:built-in-fixtures": "node --import tsx ./src/cli.ts --all",
+    "check:phase3": "node --import tsx ./src/cli.ts --all --fixtures-dir ../03-software-e2e-prep/fixtures",
+    "check:all-fixtures": "npm run check:built-in-fixtures && npm run check:phase3"
+  },
+  "devDependencies": {
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+._*
+
+# Python
+__pycache__/
+.pytest_cache/
+*.pyc
+
+# Node
+node_modules/
+
+# local outputs
+outbox/
+*.log
+
+# OS / editor
+.vscode/
+.idea/

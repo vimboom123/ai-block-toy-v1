@@ -1,0 +1,41 @@
+id: fx_network_error_partial_report
+category: partial_report
+theme_code: build_bridge_v1
+seed_profile:
+  child_age: 5
+  locale: zh-CN
+session_bootstrap:
+  public_stage: active
+  initial_state: active
+steps:
+  - at: 0s
+    actor: system
+    type: session.started
+  - at: 2s
+    actor: system
+    type: task.activated
+    payload:
+      task_id: task_1
+  - at: 18s
+    actor: child
+    type: task.completed
+    payload:
+      task_id: task_1
+  - at: 26s
+    actor: system
+    type: session.ended
+    payload:
+      end_reason: network_error
+  - at: 27s
+    actor: system
+    type: parent_report.generated
+    payload:
+      publish_status: partial
+      report_status: partial
+expected:
+  terminal_session_status: aborted
+  end_reason: network_error
+  report_publish_status: partial
+  projection_assert:
+    report:
+      publish_status: partial

@@ -1,0 +1,55 @@
+id: fx_hint_escalation_complete
+category: help_escalation
+theme_code: build_bridge_v1
+seed_profile:
+  child_age: 5
+  locale: zh-CN
+session_bootstrap:
+  public_stage: active
+  initial_state: active
+steps:
+  - at: 0s
+    actor: system
+    type: session.started
+  - at: 3s
+    actor: system
+    type: task.activated
+    payload:
+      task_id: task_1
+  - at: 12s
+    actor: child
+    type: help.level_changed
+    payload:
+      from: none
+      to: light_nudge
+      reason: low_confidence_attempt
+  - at: 20s
+    actor: child
+    type: help.level_changed
+    payload:
+      from: light_nudge
+      to: guided_hint
+      reason: repeated_failed_attempt
+  - at: 30s
+    actor: child
+    type: task.completed
+    payload:
+      task_id: task_1
+  - at: 39s
+    actor: system
+    type: session.ended
+  - at: 40s
+    actor: system
+    type: parent_report.generated
+    payload:
+      publish_status: published
+expected:
+  terminal_session_status: ended
+  help_level_peak: guided_hint
+  report_publish_status: published
+  projection_assert:
+    live:
+      display_status: ended
+      parent_note_contains: 系统已给出关键线索
+    report:
+      achievement_contains: 在提示下完成

@@ -1,0 +1,36 @@
+id: fx_system_abort_partial_report
+category: partial_report
+theme_code: build_bridge_v1
+seed_profile:
+  child_age: 5
+  locale: zh-CN
+session_bootstrap:
+  public_stage: active
+  initial_state: active
+steps:
+  - at: 0s
+    actor: system
+    type: session.started
+  - at: 2s
+    actor: system
+    type: task.activated
+    payload:
+      task_id: task_1
+  - at: 12s
+    actor: system
+    type: session.ended
+    payload:
+      end_reason: system_abort
+  - at: 13s
+    actor: system
+    type: parent_report.generated
+    payload:
+      publish_status: partial
+      report_status: partial
+expected:
+  terminal_session_status: aborted
+  end_reason: system_abort
+  report_publish_status: partial
+  projection_assert:
+    home:
+      latest_session_status: aborted

@@ -1,0 +1,106 @@
+id: fx_hint_escalation_complete
+category: help_escalation
+theme_code: build_bridge_v1
+seed_profile:
+  child_age: 5
+  locale: zh-CN
+session_bootstrap:
+  public_stage: doing_task
+  initial_state: await_answer
+steps:
+  - at: 0s
+    actor: system
+    type: session.started
+  - at: 4s
+    actor: system
+    type: task.activated
+    payload:
+      task_id: task_001
+      theme_task_key: build_bridge_step_1
+      sequence_no: 1
+  - at: 16s
+    actor: child
+    type: nlu.interpreted
+    payload:
+      intent: wrong_answer
+      confidence_score: 0.38
+      confidence_level: low
+  - at: 18s
+    actor: system
+    type: help.level_changed
+    payload:
+      from_level: none
+      to_level: light_nudge
+  - at: 31s
+    actor: child
+    type: nlu.interpreted
+    payload:
+      intent: wrong_answer
+      confidence_score: 0.42
+      confidence_level: low
+  - at: 33s
+    actor: system
+    type: help.level_changed
+    payload:
+      from_level: light_nudge
+      to_level: guided_hint
+  - at: 56s
+    actor: system
+    type: task.completed
+    payload:
+      task_id: task_001
+      result_code: completed_with_hint
+  - at: 72s
+    actor: system
+    type: session.ended
+    payload:
+      end_reason: completed
+  - at: 74s
+    actor: system
+    type: parent_report.generated
+expected:
+  terminal:
+    session_status: ended
+    public_stage: ended
+    completed_task_count: 1
+    retry_count: 0
+    help_level_peak: guided_hint
+    report_publish_status: published
+    end_reason: completed
+  events:
+    must_contain:
+      - session.started
+      - nlu.interpreted
+      - state.transition_applied
+      - task.activated
+      - help.level_changed
+      - task.completed
+      - session.ended
+      - parent_report.generated
+    must_not_contain:
+      - child.answer_incorrect
+  projections:
+    live:
+      current_task_is_null: true
+      current_task:
+        parent_note: system_has_given_a_key_hint
+      parent_action:
+        need_parent_intervention: false
+    timeline:
+      exact_item_count: 5
+      must_include_display_types:
+        - session_started
+        - task_progress
+        - hint_given
+        - task_completed
+      public_payload_only: true
+    report:
+      summary:
+        publish_status: published
+        help_level_peak: guided_hint
+        confidence_overall: low
+      achievement_must_reference_hint_completion: true
+    home:
+      active_session_is_null: true
+      latest_report_expected: true
+      continue_entry_allowed: false

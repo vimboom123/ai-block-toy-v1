@@ -1,0 +1,105 @@
+id: fx_parent_takeover_terminate
+category: parent_takeover
+theme_code: build_bridge_v1
+seed_profile:
+  child_age: 5
+  locale: zh-CN
+session_bootstrap:
+  public_stage: doing_task
+  initial_state: await_answer
+steps:
+  - at: 0s
+    actor: system
+    type: session.started
+  - at: 4s
+    actor: system
+    type: task.activated
+    payload:
+      task_id: task_001
+      theme_task_key: build_bridge_step_1
+      sequence_no: 1
+  - at: 18s
+    actor: system
+    type: task.failed
+    payload:
+      task_id: task_001
+      result_code: failed_confusion
+      attempt_count: 1
+  - at: 30s
+    actor: system
+    type: task.failed
+    payload:
+      task_id: task_001
+      result_code: failed_confusion
+      attempt_count: 2
+  - at: 32s
+    actor: system
+    type: help.level_changed
+    payload:
+      from_level: guided_hint
+      to_level: parent_takeover
+  - at: 34s
+    actor: parent
+    type: parent.interrupt_requested
+    payload:
+      source: app
+      reason: parent_takeover
+  - at: 52s
+    actor: parent
+    type: parent.end_session_requested
+    payload:
+      source: app
+      reason: parent_interrupted
+  - at: 56s
+    actor: system
+    type: session.ended
+    payload:
+      end_reason: parent_interrupted
+  - at: 58s
+    actor: system
+    type: parent_report.generated
+expected:
+  terminal:
+    session_status: aborted
+    public_stage: ended
+    completed_task_count: 0
+    retry_count: 0
+    help_level_peak: parent_takeover
+    report_publish_status: partial
+    end_reason: parent_interrupted
+  events:
+    must_contain:
+      - session.started
+      - state.transition_applied
+      - task.failed
+      - help.level_changed
+      - parent.interrupt_requested
+      - parent.end_session_requested
+      - session.ended
+      - parent_report.generated
+  projections:
+    live:
+      header:
+        display_status: aborted
+        public_stage: ended
+      current_task_is_null: true
+      parent_action:
+        need_parent_intervention: true
+    timeline:
+      min_item_count: 4
+      must_include_display_types:
+        - task_failed
+        - paused_for_parent
+        - session_ended
+      public_payload_only: true
+    report:
+      summary:
+        publish_status: partial
+        end_reason: parent_interrupted
+      must_not_expose_raw_failure_detail: true
+    home:
+      active_session_is_null: true
+      latest_report_expected: false
+      continue_entry_allowed: true
+      must_surface_early_end_state: true
+

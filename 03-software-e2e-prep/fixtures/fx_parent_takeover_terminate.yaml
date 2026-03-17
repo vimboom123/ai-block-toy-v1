@@ -1,0 +1,54 @@
+id: fx_parent_takeover_terminate
+category: parent_takeover_terminate
+theme_code: build_bridge_v1
+seed_profile:
+  child_age: 5
+  locale: zh-CN
+session_bootstrap:
+  public_stage: active
+  initial_state: active
+steps:
+  - at: 0s
+    actor: system
+    type: session.started
+  - at: 3s
+    actor: system
+    type: task.activated
+    payload:
+      task_id: task_1
+  - at: 18s
+    actor: system
+    type: task.failed
+    payload:
+      task_id: task_1
+      reason: repeated_incorrect_attempts
+  - at: 20s
+    actor: parent
+    type: parent.interrupt_requested
+    payload:
+      mode: terminate
+  - at: 26s
+    actor: system
+    type: parent.end_session_requested
+    payload:
+      reason: parent_interrupted
+  - at: 30s
+    actor: system
+    type: session.ended
+    payload:
+      end_reason: parent_interrupted
+  - at: 31s
+    actor: system
+    type: parent_report.generated
+    payload:
+      publish_status: partial
+expected:
+  terminal_session_status: aborted
+  end_reason: parent_interrupted
+  report_publish_status: partial
+  projection_assert:
+    live:
+      current_task: null
+    home:
+      latest_session_status: aborted
+      latest_summary_contains: 已提前结束

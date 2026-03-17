@@ -1,0 +1,135 @@
+id: fx_happy_path_basic
+category: happy_path
+theme_code: build_bridge_v1
+seed_profile:
+  child_age: 5
+  locale: zh-CN
+session_bootstrap:
+  public_stage: warming_up
+  initial_state: warming_up
+steps:
+  - at: 0s
+    actor: system
+    type: session.started
+    payload:
+      entry_trigger: fixture_bootstrap
+  - at: 8s
+    actor: child
+    type: nlu.interpreted
+    payload:
+      intent: ready_to_start
+      confidence_score: 0.94
+  - at: 12s
+    actor: system
+    type: task.activated
+    payload:
+      task_id: task_001
+      theme_task_key: build_bridge_step_1
+      sequence_no: 1
+  - at: 30s
+    actor: child
+    type: nlu.interpreted
+    payload:
+      intent: correct_answer
+      confidence_score: 0.91
+  - at: 45s
+    actor: system
+    type: task.completed
+    payload:
+      task_id: task_001
+      result_code: correct
+  - at: 50s
+    actor: system
+    type: task.activated
+    payload:
+      task_id: task_002
+      theme_task_key: build_bridge_step_2
+      sequence_no: 2
+  - at: 78s
+    actor: child
+    type: nlu.interpreted
+    payload:
+      intent: correct_answer
+      confidence_score: 0.88
+  - at: 95s
+    actor: system
+    type: task.completed
+    payload:
+      task_id: task_002
+      result_code: correct
+  - at: 110s
+    actor: system
+    type: session.ended
+    payload:
+      end_reason: completed
+  - at: 112s
+    actor: system
+    type: parent_report.generated
+expected:
+  terminal:
+    session_status: ended
+    public_stage: ended
+    completed_task_count: 2
+    retry_count: 0
+    help_level_peak: none
+    report_publish_status: published
+    end_reason: completed
+  events:
+    must_contain:
+      - session.started
+      - nlu.interpreted
+      - state.transition_applied
+      - task.activated
+      - task.completed
+      - session.ended
+      - parent_report.generated
+    must_not_contain:
+      - child.intent_recognized
+    contracts:
+      - event_type: parent_report.generated
+        producer: system
+        payload_private_required_keys:
+          - report_id
+          - report_version
+          - summary_version
+          - publish_status
+          - source_event_range
+        payload_private_contains:
+          report_version: 1
+          summary_version: v1
+          publish_status: published
+          source_event_range:
+            from_seq: 1
+  projections:
+    live:
+      header:
+        public_stage: ended
+        display_status: ended
+      progress:
+        completed_task_count: 2
+        retry_count: 0
+      current_task_is_null: true
+      parent_action:
+        need_parent_intervention: false
+    timeline:
+      min_item_count: 4
+      must_include_display_types:
+        - session_started
+        - task_progress
+        - task_completed
+        - session_ended
+      public_payload_only: true
+    report:
+      summary:
+        publish_status: published
+        help_level_peak: none
+        confidence_overall: high
+      required_text_fields:
+        - parent_summary
+        - follow_up_suggestion
+      parent_summary_contains: 2 个任务
+      follow_up_contains: build bridge step 2
+    home:
+      active_session_is_null: true
+      latest_report_expected: true
+      continue_entry_allowed: false

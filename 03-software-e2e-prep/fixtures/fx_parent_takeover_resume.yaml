@@ -1,0 +1,56 @@
+id: fx_parent_takeover_resume
+category: parent_takeover_resume
+theme_code: build_bridge_v1
+seed_profile:
+  child_age: 5
+  locale: zh-CN
+session_bootstrap:
+  public_stage: active
+  initial_state: active
+steps:
+  - at: 0s
+    actor: system
+    type: session.started
+  - at: 3s
+    actor: system
+    type: task.activated
+    payload:
+      task_id: task_1
+  - at: 18s
+    actor: system
+    type: task.failed
+    payload:
+      task_id: task_1
+      reason: repeated_incorrect_attempts
+  - at: 20s
+    actor: parent
+    type: parent.interrupt_requested
+    payload:
+      mode: hold
+  - at: 35s
+    actor: parent
+    type: parent.resume_requested
+    payload:
+      mode: resume
+  - at: 50s
+    actor: child
+    type: task.completed
+    payload:
+      task_id: task_1
+  - at: 62s
+    actor: system
+    type: session.ended
+  - at: 63s
+    actor: system
+    type: parent_report.generated
+    payload:
+      publish_status: published
+expected:
+  terminal_session_status: ended
+  report_publish_status: published
+  projection_assert:
+    live:
+      need_parent_intervention: false
+    timeline:
+    report:
+      parent_summary_contains: 家长介入后恢复

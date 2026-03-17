@@ -1,0 +1,82 @@
+id: fx_timeline_pause_resume_debounce
+category: timeline_alignment
+theme_code: build_bridge_v1
+seed_profile:
+  child_age: 5
+  locale: zh-CN
+session_bootstrap:
+  public_stage: doing_task
+  initial_state: await_answer
+steps:
+  - at: 0s
+    actor: system
+    type: session.started
+  - at: 4s
+    actor: system
+    type: task.activated
+    payload:
+      task_id: task_001
+      theme_task_key: build_bridge_step_1
+      sequence_no: 1
+  - at: 18s
+    actor: parent
+    type: parent.interrupt_requested
+    payload:
+      source: app
+      reason: quick_check
+  - at: 26s
+    actor: parent
+    type: parent.resume_requested
+    payload:
+      source: app
+  - at: 54s
+    actor: system
+    type: task.completed
+    payload:
+      task_id: task_001
+      result_code: correct
+  - at: 70s
+    actor: system
+    type: session.ended
+    payload:
+      end_reason: completed
+  - at: 72s
+    actor: system
+    type: parent_report.generated
+expected:
+  terminal:
+    session_status: ended
+    public_stage: ended
+    completed_task_count: 1
+    retry_count: 0
+    help_level_peak: parent_takeover
+    report_publish_status: published
+    end_reason: completed
+  events:
+    must_contain:
+      - session.started
+      - task.activated
+      - parent.interrupt_requested
+      - parent.resume_requested
+      - task.completed
+      - session.ended
+      - parent_report.generated
+  projections:
+    timeline:
+      exact_item_count: 4
+      must_include_display_types:
+        - session_started
+        - task_progress
+        - task_completed
+        - session_ended
+      must_exclude_display_types:
+        - paused_for_parent
+        - session_resumed
+      public_payload_only: true
+    report:
+      summary:
+        publish_status: published
+    home:
+      active_session_is_null: true
+      latest_report_expected: true
+      continue_entry_allowed: false

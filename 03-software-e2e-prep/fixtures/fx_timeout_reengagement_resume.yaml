@@ -1,0 +1,55 @@
+id: fx_timeout_reengagement_resume
+category: timeout_resume
+theme_code: build_bridge_v1
+seed_profile:
+  child_age: 5
+  locale: zh-CN
+session_bootstrap:
+  public_stage: active
+  initial_state: active
+steps:
+  - at: 0s
+    actor: system
+    type: session.started
+  - at: 2s
+    actor: system
+    type: task.activated
+    payload:
+      task_id: task_1
+  - at: 35s
+    actor: system
+    type: child.no_response_timeout
+    payload:
+      task_id: task_1
+      timeout_sec: 30
+  - at: 38s
+    actor: system
+    type: help.level_changed
+    payload:
+      from: none
+      to: light_nudge
+      reason: timeout_reengagement
+  - at: 55s
+    actor: child
+    type: task.completed
+    payload:
+      task_id: task_1
+  - at: 65s
+    actor: system
+    type: session.ended
+  - at: 66s
+    actor: system
+    type: parent_report.generated
+    payload:
+      publish_status: published
+expected:
+  terminal_session_status: ended
+  display_status: active_then_ended
+  report_publish_status: published
+  projection_assert:
+    timeline:
+      required_events:
+        - help.level_changed
+        - task.completed
+    report:
+      summary_contains: 中途分心后重新投入

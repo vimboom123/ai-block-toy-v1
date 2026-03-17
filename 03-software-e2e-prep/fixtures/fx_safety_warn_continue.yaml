@@ -1,0 +1,44 @@
+id: fx_safety_warn_continue
+category: safety_warn_continue
+theme_code: build_bridge_v1
+seed_profile:
+  child_age: 5
+  locale: zh-CN
+session_bootstrap:
+  public_stage: active
+  initial_state: active
+steps:
+  - at: 0s
+    actor: system
+    type: session.started
+  - at: 2s
+    actor: system
+    type: task.activated
+    payload:
+      task_id: task_1
+  - at: 10s
+    actor: system
+    type: safety.checked
+    payload:
+      result: warn
+      safety_notice_level: medium
+  - at: 22s
+    actor: child
+    type: task.completed
+    payload:
+      task_id: task_1
+  - at: 30s
+    actor: system
+    type: session.ended
+  - at: 31s
+    actor: system
+    type: parent_report.generated
+    payload:
+      publish_status: published
+expected:
+  terminal_session_status: ended
+  report_publish_status: published
+  projection_assert:
+    report:
+      safety_notice_level: medium
+      publish_status: published

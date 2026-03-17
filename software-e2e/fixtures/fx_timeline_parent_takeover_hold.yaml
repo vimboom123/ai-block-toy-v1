@@ -1,0 +1,113 @@
+id: fx_timeline_parent_takeover_hold
+category: timeline_alignment
+theme_code: build_bridge_v1
+seed_profile:
+  child_age: 5
+  locale: zh-CN
+session_bootstrap:
+  public_stage: doing_task
+  initial_state: await_answer
+steps:
+  - at: 0s
+    actor: system
+    type: session.started
+  - at: 4s
+    actor: system
+    type: task.activated
+    payload:
+      task_id: task_001
+      theme_task_key: build_bridge_step_1
+      sequence_no: 1
+  - at: 18s
+    actor: child
+    type: nlu.interpreted
+    payload:
+      intent: wrong_answer
+      confidence_score: 0.41
+      confidence_level: low
+  - at: 20s
+    actor: system
+    type: help.level_changed
+    payload:
+      from_level: none
+      to_level: guided_hint
+      reason: first_escalation
+  - at: 24s
+    actor: system
+    type: help.level_changed
+    payload:
+      from_level: guided_hint
+      to_level: parent_takeover
+      reason: needs_parent
+  - at: 68s
+    actor: system
+    type: help.level_changed
+    payload:
+      from_level: parent_takeover
+      to_level: guided_hint
+      reason: should_stay_suppressed
+  - at: 90s
+    actor: parent
+    type: parent.resume_requested
+    payload:
+      source: app
+  - at: 96s
+    actor: system
+    type: help.level_changed
+    payload:
+      from_level: none
+      to_level: guided_hint
+      reason: post_resume_hint
+  - at: 120s
+    actor: system
+    type: task.completed
+    payload:
+      task_id: task_001
+      result_code: completed_with_hint
+  - at: 136s
+    actor: system
+    type: session.ended
+    payload:
+      end_reason: completed
+  - at: 138s
+    actor: system
+    type: parent_report.generated
+expected:
+  terminal:
+    session_status: ended
+    public_stage: ended
+    completed_task_count: 1
+    retry_count: 0
+    help_level_peak: parent_takeover
+    report_publish_status: published
+    end_reason: completed
+  events:
+    must_contain:
+      - session.started
+      - nlu.interpreted
+      - help.level_changed
+      - parent.resume_requested
+      - task.completed
+      - session.ended
+      - parent_report.generated
+  projections:
+    timeline:
+      exact_item_count: 7
+      must_include_display_types:
+        - session_started
+        - task_progress
+        - paused_for_parent
+        - session_resumed
+        - hint_given
+        - task_completed
+        - session_ended
+      public_payload_only: true
+    report:
+      summary:
+        publish_status: published
+        help_level_peak: parent_takeover
+        confidence_overall: low
+    home:
+      active_session_is_null: true
+      latest_report_expected: true
+      continue_entry_allowed: false

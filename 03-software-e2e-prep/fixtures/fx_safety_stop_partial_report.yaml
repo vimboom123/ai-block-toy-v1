@@ -1,0 +1,44 @@
+id: fx_safety_stop_partial_report
+category: safety_stop
+theme_code: build_bridge_v1
+seed_profile:
+  child_age: 5
+  locale: zh-CN
+session_bootstrap:
+  public_stage: active
+  initial_state: active
+steps:
+  - at: 0s
+    actor: system
+    type: session.started
+  - at: 2s
+    actor: system
+    type: task.activated
+    payload:
+      task_id: task_1
+  - at: 15s
+    actor: system
+    type: safety.checked
+    payload:
+      result: stop
+      safety_notice_level: high
+  - at: 18s
+    actor: system
+    type: session.ended
+    payload:
+      end_reason: safety_stop
+  - at: 19s
+    actor: system
+    type: parent_report.generated
+    payload:
+      publish_status: partial
+expected:
+  terminal_session_status: aborted
+  end_reason: safety_stop
+  report_publish_status: partial
+  projection_assert:
+    report:
+      safety_notice_level: high
+    timeline:
+      required_events:
+        - session.ended

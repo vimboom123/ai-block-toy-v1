@@ -1,0 +1,97 @@
+id: fx_safety_stop_partial_report
+category: safety_stop
+theme_code: build_bridge_v1
+seed_profile:
+  child_age: 5
+  locale: zh-CN
+session_bootstrap:
+  public_stage: doing_task
+  initial_state: await_answer
+steps:
+  - at: 0s
+    actor: system
+    type: session.started
+  - at: 4s
+    actor: system
+    type: task.activated
+    payload:
+      task_id: task_001
+      theme_task_key: build_bridge_step_1
+      sequence_no: 1
+  - at: 21s
+    actor: system
+    type: safety.checked
+    payload:
+      result: stop
+      reason_codes:
+        - safety_stop
+  - at: 24s
+    actor: system
+    type: session.ended
+    payload:
+      end_reason: safety_stop
+  - at: 26s
+    actor: system
+    type: parent_report.generated
+expected:
+  terminal:
+    session_status: aborted
+    public_stage: ended
+    completed_task_count: 0
+    retry_count: 0
+    help_level_peak: none
+    report_publish_status: partial
+    end_reason: safety_stop
+    safety_notice_level: high
+  events:
+    must_contain:
+      - session.started
+      - state.transition_applied
+      - safety.checked
+      - session.ended
+      - parent_report.generated
+    contracts:
+      - event_type: safety.checked
+        producer: system
+      - event_type: parent_report.generated
+        producer: system
+        payload_private_required_keys:
+          - report_id
+          - report_version
+          - summary_version
+          - publish_status
+          - source_event_range
+        payload_private_contains:
+          report_version: 1
+          summary_version: v1
+          publish_status: partial
+          source_event_range:
+            from_seq: 1
+  projections:
+    live:
+      header:
+        display_status: aborted
+        public_stage: ended
+      current_task_is_null: true
+      parent_action:
+        need_parent_intervention: true
+    timeline:
+      min_item_count: 3
+      must_include_display_types:
+        - session_started
+        - safety_alert
+      must_exclude_event_types:
+        - safety.checked
+      public_payload_only: true
+    report:
+      summary:
+        publish_status: partial
+        end_reason: safety_stop
+      safety:
+        safety_notice_level: high
+    home:
+      active_session_is_null: true
+      latest_report_expected: false
+      continue_entry_allowed: false
+      required_alert_types:
+        - safety_stop

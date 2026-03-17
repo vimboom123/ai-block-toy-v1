@@ -1,0 +1,61 @@
+id: fx_happy_path_basic
+category: happy_path
+theme_code: build_bridge_v1
+seed_profile:
+  child_age: 5
+  locale: zh-CN
+session_bootstrap:
+  public_stage: warming_up
+  initial_state: warming_up
+steps:
+  - at: 0s
+    actor: system
+    type: session.started
+  - at: 4s
+    actor: system
+    type: task.activated
+    payload:
+      task_id: task_1
+  - at: 18s
+    actor: child
+    type: task.completed
+    payload:
+      task_id: task_1
+  - at: 20s
+    actor: system
+    type: task.activated
+    payload:
+      task_id: task_2
+  - at: 40s
+    actor: child
+    type: task.completed
+    payload:
+      task_id: task_2
+  - at: 48s
+    actor: system
+    type: session.ended
+  - at: 49s
+    actor: system
+    type: parent_report.generated
+    payload:
+      publish_status: published
+expected:
+  terminal_session_status: ended
+  terminal_public_stage: ended
+  completed_task_count: 2
+  retry_count: 0
+  help_level_peak: none
+  report_publish_status: published
+  projection_assert:
+    live:
+      display_status: ended
+      current_task: null
+    timeline:
+      required_events:
+        - session.started
+        - task.activated
+        - task.completed
+        - session.ended
+    home:
+      latest_session_status: ended
+      continue_entry: null

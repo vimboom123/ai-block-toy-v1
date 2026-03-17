@@ -1,0 +1,70 @@
+id: fx_parent_takeover_reenter
+category: parent_takeover_reenter
+theme_code: build_bridge_v1
+seed_profile:
+  child_age: 5
+  locale: zh-CN
+session_bootstrap:
+  public_stage: active
+  initial_state: active
+steps:
+  - at: 0s
+    actor: system
+    type: session.started
+  - at: 2s
+    actor: system
+    type: task.activated
+    payload:
+      task_id: task_1
+  - at: 16s
+    actor: system
+    type: task.failed
+    payload:
+      task_id: task_1
+  - at: 18s
+    actor: parent
+    type: parent.interrupt_requested
+    payload:
+      mode: hold
+  - at: 28s
+    actor: parent
+    type: parent.resume_requested
+    payload:
+      mode: resume
+  - at: 40s
+    actor: system
+    type: task.failed
+    payload:
+      task_id: task_1
+      reason: failed_again_after_resume
+  - at: 42s
+    actor: parent
+    type: parent.interrupt_requested
+    payload:
+      mode: hold
+  - at: 55s
+    actor: parent
+    type: parent.resume_requested
+    payload:
+      mode: resume
+  - at: 68s
+    actor: child
+    type: task.completed
+    payload:
+      task_id: task_1
+  - at: 75s
+    actor: system
+    type: session.ended
+  - at: 76s
+    actor: system
+    type: parent_report.generated
+    payload:
+      publish_status: published
+expected:
+  terminal_session_status: ended
+  report_publish_status: published
+  projection_assert:
+    timeline:
+      required_events:
+        - task.failed
+        - task.completed

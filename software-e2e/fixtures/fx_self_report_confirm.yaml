@@ -1,0 +1,113 @@
+id: fx_self_report_confirm
+category: self_report_confirm
+theme_code: build_bridge_v1
+seed_profile:
+  child_age: 5
+  locale: zh-CN
+session_bootstrap:
+  public_stage: doing_task
+  initial_state: await_answer
+steps:
+  - at: 0s
+    actor: system
+    type: session.started
+  - at: 4s
+    actor: system
+    type: task.activated
+    payload:
+      task_id: task_001
+      theme_task_key: build_bridge_step_1
+      sequence_no: 1
+  - at: 18s
+    actor: child
+    type: nlu.interpreted
+    payload:
+      intent: candidate_complete
+      requires_self_report: true
+      confidence_score: 0.78
+  - at: 32s
+    actor: system
+    type: child.no_response_timeout
+    payload:
+      timeout_sec: 12
+      waiting_state: self_report_confirm
+  - at: 34s
+    actor: system
+    type: help.level_changed
+    payload:
+      from_level: none
+      to_level: guided_hint
+      reason: self_report_confirm_timeout
+  - at: 48s
+    actor: child
+    type: nlu.interpreted
+    payload:
+      intent: confirm_done
+      confidence_score: 0.64
+  - at: 50s
+    actor: system
+    type: task.completed
+    payload:
+      task_id: task_001
+      result_code: completed_with_hint
+  - at: 64s
+    actor: system
+    type: session.ended
+    payload:
+      end_reason: completed
+  - at: 66s
+    actor: system
+    type: parent_report.generated
+expected:
+  terminal:
+    session_status: ended
+    public_stage: ended
+    completed_task_count: 1
+    retry_count: 0
+    help_level_peak: guided_hint
+    report_publish_status: published
+    end_reason: completed
+  events:
+    must_contain:
+      - session.started
+      - nlu.interpreted
+      - state.transition_applied
+      - child.no_response_timeout
+      - help.level_changed
+      - task.completed
+      - session.ended
+      - parent_report.generated
+  projections:
+    live:
+      header:
+        display_status: ended
+      current_task_is_null: true
+      parent_action:
+        need_parent_intervention: false
+    timeline:
+      exact_item_count: 5
+      must_include_display_types:
+        - session_started
+        - task_progress
+        - hint_given
+        - task_completed
+        - session_ended
+      must_exclude_event_types:
+        - child.no_response_timeout
+      public_payload_only: true
+    report:
+      summary:
+        publish_status: published
+        help_level_peak: guided_hint
+        confidence_overall: medium
+      achievement_must_reference_hint_completion: true
+      achievement_contains: 口头确认
+    home:
+      active_session_is_null: true
+      latest_report_expected: true
+      continue_entry_allowed: false
+  checkpoints:
+    - after_step: 3
+      awaiting_child_confirmation: true
+    - after_step: 5
+      awaiting_child_confirmation: false
