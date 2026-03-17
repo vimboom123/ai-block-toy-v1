@@ -80,7 +80,7 @@ npm run check:built-in-fixtures
 
 - 当前真实运行时只覆盖 `classic_world_fire_station` 场景，不是通用多场景引擎。
 - `05-dialog-runtime` 仍是 request-scoped runtime，每次请求都会真实跑 prompt / LLM，没有结果缓存。
-- `06-session-runtime` 的 session 持久化目前只到进程内内存或单个本地 JSON 文件，不含数据库、租户隔离或后台任务体系。
+- `06-session-runtime` 的 session 持久化目前只到单个本地 JSON 文件，不含数据库、租户隔离或后台任务体系。
 - `task_signal=auto` 只是最小 heuristic，不代表已经完成稳定的儿童输入理解或意图识别。
 - `ui-mvp-mobile/` 是内部演示 UI，不是最终面向家长或孩子的正式产品界面。
 - report / live / timeline projection 的规格已写清，但还没有收成独立、稳定的正式服务。
@@ -95,9 +95,14 @@ npm run check:built-in-fixtures
 - 产品规格主入口：[`01-product-spec/ai-block-toy-master-outline-v1.md`](./01-product-spec/ai-block-toy-master-outline-v1.md)
 - 状态机：[`01-product-spec/ai-block-toy-state-machine-mermaid-final-v1.md`](./01-product-spec/ai-block-toy-state-machine-mermaid-final-v1.md)
 
+## 当前建议对外口径
+
+可以这样介绍：
+
+“AI Block Toy v1 是一个儿童引导式互动玩具的软件原型项目。当前版本已经打通了从场景定义、模型引导回复、会话状态管理到演示 UI 的主链路，能跑真实对话和最小 session；同时保留了完整的规格、projection 和软件验证基线，用于后续语音与硬件联调。”
+
 ## 下一步
 
 - 提升 `task_signal=auto` 的完成判定和输入理解质量，减少手工 signal 依赖。
-- 把 session runtime 的状态持久化、损坏恢复和清理策略做稳。
 - 将 `02-projections/` 中的 live / report / timeline 规格逐步落成可调用服务。
 - 在现有 Fire Station 场景跑稳之后，再扩展更多场景和设备联动。
