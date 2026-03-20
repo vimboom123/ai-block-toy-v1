@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ai-block-toy/phase7/signal_resolution.schema.json",
+  "title": "SignalResolution",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "task_signal",
+    "confidence",
+    "reason",
+    "fallback_needed",
+    "normalized_child_text"
+  ],
+  "properties": {
+    "task_signal": {
+      "type": "string",
+      "enum": ["keep_trying", "task_completed", "end_session"]
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1
+    },
+    "fallback_needed": {
+      "type": "boolean"
+    },
+    "partial_credit": {
+      "type": "boolean",
+      "default": false
+    },
+    "normalized_child_text": {
+      "type": "string",
+      "minLength": 1
+    },
+    "matched_completion_points": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "missing_completion_points": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "engagement_state": {
+      "type": "string",
+      "enum": ["engaged", "curious", "playful", "distracted", "frustrated", "withdrawing", "unknown"],
+      "default": "unknown"
+    }
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ai-block-toy/phase7/interaction_generation.schema.json",
+  "title": "InteractionGeneration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "reply_text",
+    "interaction_mode",
+    "emotion_tone",
+    "redirect_strength"
+  ],
+  "properties": {
+    "reply_text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "interaction_mode": {
+      "type": "string",
+      "enum": [
+        "acknowledge_and_redirect",
+        "warm_redirect",
+        "gentle_retry",
+        "celebrate_completion",
+        "graceful_end",
+        "emotional_soothing",
+        "playful_probe"
+      ]
+    },
+    "emotion_tone": {
+      "type": "string",
+      "enum": ["playful", "warm", "excited", "calm", "encouraging", "soothing"]
+    },
+    "redirect_strength": {
+      "type": "string",
+      "enum": ["none", "soft", "medium", "strong"]
+    },
+    "generation_source": {
+      "type": "string",
+      "enum": ["template_fallback", "llm_provider"]
+    },
+    "acknowledged_child_point": {
+      "type": "string"
+    },
+    "followup_question": {
+      "type": "string"
+    },
+    "provider_name": {
+      "type": "string"
+    },
+    "fallback_reason": {
+      "type": "string"
+    }
+  }
+}
