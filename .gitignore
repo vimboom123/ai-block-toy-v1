@@ -13,7 +13,12 @@ node_modules/
 # local outputs
 outbox/
 *.log
+runtimes/session/state/
+runtimes/voice/state/
+07-voice-runtime/
 
 # OS / editor
 .vscode/
 .idea/
+*.swp
+*.swo

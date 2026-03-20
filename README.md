@@ -1,108 +1,89 @@
 # AI Block Toy v1
 
-`AI Block Toy v1` 是一个面向儿童引导式互动玩具的软件原型项目。当前仓库覆盖了场景与任务定义、确定性软件验证、真实文本对话运行时、最小会话运行时，以及一套用于演示的移动端 UI。
+`AI Block Toy v1` 是一个面向儿童互动积木玩具的软件原型仓库。  
+这次整理后的目标很简单：仓库按职责读，不再按阶段编号读。
 
-项目当前的目标不是一次性做完整产品，而是先把一条可验证、可运行、可继续扩展的主链路做实：从场景定义，到对话生成，到 session / turn / task 状态，再到面向查看与演示的 UI。
+## 先看什么
 
-## 当前状态
+如果你第一次进这个仓库，按这个顺序看：
 
-- 已有可运行半成品：[`06-session-runtime/README.md`](./06-session-runtime/README.md) 是当前最完整的演示入口，支持创建 session、提交 turn、推进 task，并在同端口查看 UI。
-- 真实模型调用已接通：[`05-dialog-runtime/README.md`](./05-dialog-runtime/README.md) 已能对接 Ark 文本接口，返回结构化的 task-level 引导结果。
-- 契约验证主链已建立：[`software-e2e/README.md`](./software-e2e/README.md) 是当前唯一推荐的软件 E2E runner，用于 fixture 回放、状态转换和 projection 断言。
-- 产品与投影基线已成形：`00-governance/`、`01-product-spec/`、`02-projections/` 中的规格文档足以支撑当前实现继续推进。
-- 当前仍是产品原型，不是 production service。持久化、可靠理解、多场景、多端接入和正式 projection 服务都还没有做完。
+1. [`README.md`](/Volumes/Lexar/OpenClawStore/state/workspace/studio/projects/ai-block-toy-v1/README.md)
+2. [`docs/index.md`](/Volumes/Lexar/OpenClawStore/state/workspace/studio/projects/ai-block-toy-v1/docs/index.md)
+3. [`runtimes/session/README.md`](/Volumes/Lexar/OpenClawStore/state/workspace/studio/projects/ai-block-toy-v1/runtimes/session/README.md)
+4. [`runtimes/voice/README.md`](/Volumes/Lexar/OpenClawStore/state/workspace/studio/projects/ai-block-toy-v1/runtimes/voice/README.md)
+5. [`apps/parent-view/README.md`](/Volumes/Lexar/OpenClawStore/state/workspace/studio/projects/ai-block-toy-v1/apps/parent-view/README.md)
 
-## 推荐入口
+## 现在的仓库结构
 
-### 1. 预览当前最完整演示链路
+- `runtimes/`
+  - 可运行主链。这里是项目今天真正能跑的部分。
+- `apps/`
+  - UI 原型和演示端。
+- `specs/`
+  - 产品规格和 projection 口径。
+- `governance/`
+  - 公共规则、session 外显口径、家长报告规则。
+- `verification/`
+  - fixture、contract、golden 等验证链。
+- `docs/`
+  - 导航、总览、阅读顺序。
+- `archive/`
+  - 历史阶段材料和旧草稿，不作为默认入口。
+
+## 活跃模块
+
+- [`runtimes/dialog`](/Volumes/Lexar/OpenClawStore/state/workspace/studio/projects/ai-block-toy-v1/runtimes/dialog)
+  - 最小真实文本对话运行时。
+- [`runtimes/session`](/Volumes/Lexar/OpenClawStore/state/workspace/studio/projects/ai-block-toy-v1/runtimes/session)
+  - 当前项目主运行链，负责 session / turn / task / UI API。
+- [`runtimes/voice`](/Volumes/Lexar/OpenClawStore/state/workspace/studio/projects/ai-block-toy-v1/runtimes/voice)
+  - 语音链路、设备桥接、Phase 7。
+- [`apps/parent-view`](/Volumes/Lexar/OpenClawStore/state/workspace/studio/projects/ai-block-toy-v1/apps/parent-view)
+  - 家长查看页 / 演示 UI。
+- [`verification/software-e2e`](/Volumes/Lexar/OpenClawStore/state/workspace/studio/projects/ai-block-toy-v1/verification/software-e2e)
+  - 软件 E2E 与 fixture 回放。
+
+## 最快启动
+
+当前默认先看 `session runtime + parent view`：
 
 ```bash
-cd /Volumes/Lexar/OpenClawStore/state/workspace/studio/projects/ai-block-toy-v1/06-session-runtime
+cd /Volumes/Lexar/OpenClawStore/state/workspace/studio/projects/ai-block-toy-v1/runtimes/session
 python3 -m session_runtime.server --port 4183
 ```
 
-打开 `http://127.0.0.1:4183/`。
+打开：
 
-说明：
+- [http://127.0.0.1:4183/](http://127.0.0.1:4183/)
 
-- UI、Session API、Health check 由同一个进程提供
-- 默认使用本地 JSON 文件保存 session
-- 如果 Ark 配置缺失，服务仍可启动，但 turn 回复会明确返回 runtime error
-
-### 2. 单独验证真实对话运行时
+如果你要跑语音主链：
 
 ```bash
-cd /Volumes/Lexar/OpenClawStore/state/workspace/studio/projects/ai-block-toy-v1/05-dialog-runtime
-python3 -m runtime.fire_station_smokes --task-id fs_002
+cd /Volumes/Lexar/OpenClawStore/state/workspace/studio/projects/ai-block-toy-v1/runtimes/voice
+python3 scripts/run_voice_fast.py
 ```
 
-如果要给 `ui-mvp-mobile/` 提供最小 runtime API：
+如果你要跑软件验证：
 
 ```bash
-python3 -m runtime.ui_runtime_server --port 4173
-```
-
-### 3. 跑确定性软件验证
-
-```bash
-cd /Volumes/Lexar/OpenClawStore/state/workspace/studio/projects/ai-block-toy-v1/software-e2e
+cd /Volumes/Lexar/OpenClawStore/state/workspace/studio/projects/ai-block-toy-v1/verification/software-e2e
 npm run check:built-in-fixtures
 ```
 
-更多命令见 [`software-e2e/README.md`](./software-e2e/README.md)。
+## 这个仓库不再怎么读
 
-## 核心目录
+这次重组后，根目录不再推荐按 `00 / 01 / 05 / 06 / 07` 这种阶段编号理解。  
+那些编号目录已经拆成职责目录，历史阶段材料全部放进了 [`archive/history`](/Volumes/Lexar/OpenClawStore/state/workspace/studio/projects/ai-block-toy-v1/archive/history)。
 
-目录编号沿用研发阶段命名，但当前应按模块职责理解，而不是把所有内容都当成“阶段日志”。
+## 当前边界
 
-- `00-governance/`
-  - 公共规则、session 对外基线、家长报告生成原则
-- `01-product-spec/`
-  - 产品主规格、状态机、schema、映射和界面结构说明
-- `02-projections/`
-  - home / live / timeline / report 等 projection 实现口径
-- `software-e2e/`
-  - 当前唯一推荐的软件 E2E 与契约回放入口
-- `05-dialog-runtime/`
-  - Fire Station 场景的真实文本对话运行时切片
-- `06-session-runtime/`
-  - 当前主演示链路，提供 stateful session runtime + API + demo UI
-- `ui-mvp-mobile/`
-  - 用于联调与演示的移动端 UI 原型
-- `03-software-e2e-prep/`、`04-software-e2e-hardening/`
-  - 历史阶段材料与准备文档，保留参考价值，但不作为默认入口
-- `archive/`
-  - 已替代或废弃的留档资料
-- `docs/`
-  - 项目总览与文档导航
-
-## 当前能力边界
-
-- 当前真实运行时只覆盖 `classic_world_fire_station` 场景，不是通用多场景引擎。
-- `05-dialog-runtime` 仍是 request-scoped runtime，每次请求都会真实跑 prompt / LLM，没有结果缓存。
-- `06-session-runtime` 的 session 持久化目前只到单个本地 JSON 文件，不含数据库、租户隔离或后台任务体系。
-- `task_signal=auto` 只是最小 heuristic，不代表已经完成稳定的儿童输入理解或意图识别。
-- `ui-mvp-mobile/` 是内部演示 UI，不是最终面向家长或孩子的正式产品界面。
-- report / live / timeline projection 的规格已写清，但还没有收成独立、稳定的正式服务。
-- 仓库里保留了不少阶段性文档和历史稿，阅读时应优先看当前入口文档，不要把旧计划稿当成当前实现说明。
-
-## 文档导航
-
-- 总览入口：[`docs/index.md`](./docs/index.md)
-- 当前主运行模块：[`06-session-runtime/README.md`](./06-session-runtime/README.md)
-- 真实文本对话切片：[`05-dialog-runtime/README.md`](./05-dialog-runtime/README.md)
-- 确定性软件验证：[`software-e2e/README.md`](./software-e2e/README.md)
-- 产品规格主入口：[`01-product-spec/ai-block-toy-master-outline-v1.md`](./01-product-spec/ai-block-toy-master-outline-v1.md)
-- 状态机：[`01-product-spec/ai-block-toy-state-machine-mermaid-final-v1.md`](./01-product-spec/ai-block-toy-state-machine-mermaid-final-v1.md)
-
-## 当前建议对外口径
-
-可以这样介绍：
-
-“AI Block Toy v1 是一个儿童引导式互动玩具的软件原型项目。当前版本已经打通了从场景定义、模型引导回复、会话状态管理到演示 UI 的主链路，能跑真实对话和最小 session；同时保留了完整的规格、projection 和软件验证基线，用于后续语音与硬件联调。”
+- 仍然是原型，不是 production service。
+- 当前主场景仍然是 `classic_world_fire_station`。
+- 设备桥接可用，但不是正式硬件平台。
+- 历史文档很多，默认只看 `README -> docs -> runtimes -> apps` 这条链。
 
 ## 下一步
 
-- 提升 `task_signal=auto` 的完成判定和输入理解质量，减少手工 signal 依赖。
-- 将 `02-projections/` 中的 live / report / timeline 规格逐步落成可调用服务。
-- 在现有 Fire Station 场景跑稳之后，再扩展更多场景和设备联动。
+- 把 active docs 全部按新目录继续收口。
+- 把 `archive/` 里的历史材料继续去噪。
+- 把运行脚本、测试和外部桥接统一到新路径口径。

@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ai-block-toy/phase7/interaction_context.schema.json",
+  "title": "InteractionContext",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "task_name",
+    "child_input_text",
+    "normalized_child_text",
+    "task_signal",
+    "engagement_state",
+    "matched_completion_points",
+    "missing_completion_points",
+    "interaction_goal",
+    "scene_style",
+    "redirect_strength",
+    "expected_child_action",
+    "interaction_mode",
+    "emotion_tone"
+  ],
+  "properties": {
+    "task_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "child_input_text": {
+      "type": "string",
+      "minLength": 1
+    },
+    "normalized_child_text": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_signal": {
+      "type": "string",
+      "enum": ["keep_trying", "task_completed", "end_session"]
+    },
+    "engagement_state": {
+      "type": "string",
+      "enum": ["engaged", "curious", "playful", "distracted", "frustrated", "withdrawing", "unknown"]
+    },
+    "partial_credit": {
+      "type": "boolean",
+      "default": false
+    },
+    "matched_completion_points": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "missing_completion_points": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "interaction_goal": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scene_style": {
+      "type": "string",
+      "minLength": 1
+    },
+    "redirect_strength": {
+      "type": "string",
+      "enum": ["none", "soft", "medium", "strong"]
+    },
+    "expected_child_action": {
+      "type": "string",
+      "minLength": 1
+    },
+    "interaction_mode": {
+      "type": "string",
+      "enum": [
+        "acknowledge_and_redirect",
+        "warm_redirect",
+        "gentle_retry",
+        "celebrate_completion",
+        "graceful_end",
+        "emotional_soothing",
+        "playful_probe"
+      ]
+    },
+    "emotion_tone": {
+      "type": "string",
+      "enum": ["playful", "warm", "excited", "calm", "encouraging", "soothing"]
+    },
+    "preferred_acknowledged_child_point": {
+      "type": "string"
+    },
+    "preferred_followup_question": {
+      "type": "string"
+    },
+    "recent_turn_summary": {
+      "type": "string"
+    },
+    "rule_reason": {
+      "type": "string"
+    },
+    "scene_context": {
+      "type": "string"
+    },
+    "session_memory": {
+      "type": "string"
+    }
+  }
+}
